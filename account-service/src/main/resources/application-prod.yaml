@@ -1,0 +1,25 @@
+server:
+  port: 8081
+  error:
+    include-message: always
+
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5424/account
+    username: root
+    password: root
+    driverClassName: org.postgresql.Driver
+  elasticsearch:
+    uris: http://localhost:9200
+  application:
+    name: account-service
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: notification-service
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      value-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+eureka:
+  client:
+    service-url:
+      defaultZone: http://eureka:password@localhost:8761/eureka

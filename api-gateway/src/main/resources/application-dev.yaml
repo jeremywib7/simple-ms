@@ -1,0 +1,97 @@
+app:
+  eureka-server: localhost
+
+server:
+  port: 8084
+
+spring:
+  jackson:
+    time-zone: Asia/Jakarta
+  application:
+    name: api-gateway
+  cloud:
+    gateway:
+      default-filters:
+        - DedupeResponseHeader=Access-Control-Allow-Credentials Access-Control-Allow-Origin
+      globals:
+        cors-configurations:
+          '[/**]':
+            allowedOrigins: "*"
+            allowedHeaders: "*"
+            allowedMethods: "*"
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        - id: account-service
+          uri: lb://account-service
+          predicates:
+            - Path=/account/**
+          filters:
+            - RewritePath=/account/(?<path>.*), /$\{path}
+
+        - id: transaction-service
+          uri: lb://transaction-service
+          predicates:
+            - Path=/transaction/**
+          filters:
+            - RewritePath=/transaction/(?<path>.*), /$\{path}
+
+        - id: discovery-server
+          uri: http://eureka:password@${app.eureka-server}:8761
+          predicates:
+            - Path=/eureka/web
+          filters:
+            - SetPath=/
+
+        - id: discovery-server-static
+          uri: http://eureka:password@${app.eureka-server}:8761
+          predicates:
+            - Path=/eureka/**
+
+        - id: openapi
+          uri: http://localhost:${server.port}
+          predicates:
+            - Path=/v3/api-docs/**
+          filters:
+            - RewritePath=/v3/api-docs/(?<path>.*), /$\{path}/v3/api-docs
+
+springdoc:
+  swagger-ui:
+    urls:
+      - name: Account Service APIs
+        url: /v3/api-docs/account
+      - name: Transaction Service APIs
+        url: /v3/api-docs/transaction
+
+eureka:
+  client:
+    serviceUrl:
+      defaultZone: http://eureka:password@localhost:8761/eureka
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+  endpoints:
+    web:
+      base-path: /actuator
+      exposure:
+        include: [ "health","prometheus", "metrics" ]
+  endpoint:
+    health:
+      show-details: always
+    metrics:
+      enabled: true
+    prometheus:
+      enabled: true
+
+logging:
+  pattern:
+    level: ${spring.application.name:},%X{traceId:-},%X{spanId:-}
+
+
+

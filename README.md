@@ -8,7 +8,6 @@ This repository contains a simple implementation of a banking system using micro
 
 - **Transaction Service:** Handles financial transactions, ensuring the integrity and consistency of funds movement between accounts.
 
-- **Notification Service:** Sends notifications to users for important account events, such as transactions and balance updates.
 
 ## Technologies Used
 
@@ -18,7 +17,7 @@ This repository contains a simple implementation of a banking system using micro
 
 - **Spring IoC (Inversion of Control):** Leveraged for managing the dependency injection and promoting loose coupling between components.
 
-- **Java 11:** The programming language used for developing the microservices.
+- **Java 17:** The programming language used for developing the microservices.
 
 - **Java Stream:** Applied to process collections of data in a functional programming style, enhancing code readability and conciseness.
 
@@ -28,31 +27,8 @@ This repository contains a simple implementation of a banking system using micro
 
 - **Kafka & Stream-Based Application:** Incorporated Kafka for building a stream-based application, enabling real-time event-driven communication between microservices.
 
-- **Redis, Caching Strategy & Data Grid:** Redis used as an in-memory data store for caching, implementing an effective caching strategy, and supporting a distributed data grid.
-
 - **Elastic & Other Non-Relational DB:** ElasticSearch and other non-relational databases integrated to demonstrate the flexibility of the microservices architecture in supporting diverse data storage requirements.
 
-## Getting Started
-
-1. Clone the repository:
-
-    ```bash
-    git clone https://github.com/your-username/simple-bank-microservices.git
-    ```
-
-2. Navigate to the project directory:
-
-    ```bash
-    cd simple-bank-microservices
-    ```
-
-3. Build and run microservices using Docker:
-
-    ```bash
-    docker-compose up
-    ```
-
-4. Access the microservices at their respective endpoints.
 
 ## Usage
 

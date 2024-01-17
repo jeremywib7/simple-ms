@@ -1,0 +1,46 @@
+server:
+  port: 8761
+
+eureka:
+  username: ${EUREKA_USERNAME:eureka}
+  password: ${EUREKA_PASSWORD:{bcrypt}$2a$10$VWmizuzmujHVZK/0EiXdfuF.8zoZURIUe1l9JBBOD4TJdi2veLyD2}
+  server:
+    enable-self-preservation: true
+    renewal-percent-threshold: 0.49
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+
+spring:
+  application:
+    name: naming-server
+  security:
+    user:
+      password: password
+      name: eureka
+  jackson:
+    serialization:
+      write-dates-as-timestamps: false
+
+logging:
+  pattern:
+    dateformat: "yyyy-MM-dd HH:mm:ss.SSS"
+    level: ${spring.application.name:},%X{traceId:-},%X{spanId:-}
+  level:
+    org.hibernate.SQL: DEBUG
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+    root: info
+
+management:
+  tracing:
+    sampling:
+      probability: 1.0
+  zipkin:
+    tracing:
+      endpoint: http://localhost:9411/api/v2/spans
+
+
