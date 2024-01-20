@@ -5,7 +5,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5424/account
+    url: jdbc:postgresql://localhost:5424/cyber-shop
     username: root
     password: root
     driverClassName: org.postgresql.Driver
@@ -13,16 +13,17 @@ spring:
     uris: http://localhost:9200
   application:
     name: account-service
-  kafka:
-    bootstrap-servers: localhost:9092
-    template:
-      default-topic: balance-update-topic
-    consumer:
-      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
-      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
-      properties:
-        spring.json.type.mapping: "event:com.thefuture.accountservice.event.BalanceUpdateEvent"
-      group-id: balanceUpdateId
+#  kafka:
+#    topic: balance-update-topic
+#    bootstrap-servers: localhost:9092
+#    template:
+#      default-topic: balance-update-topic
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#    consumer:
+#      group-id: balance-update-topic
+
 eureka:
   client:
     service-url:

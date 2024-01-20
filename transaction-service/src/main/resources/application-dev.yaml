@@ -6,15 +6,6 @@ server:
 spring:
   application:
     name: transaction-service
-  kafka:
-    bootstrap-servers: localhost:9092
-    template:
-      default-topic: balance-update-topic
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
-      properties:
-        spring.json.type.mapping: "event:com.thefuture.transactionservice.event.BalanceUpdateEvent"
 
 eureka:
   client:
