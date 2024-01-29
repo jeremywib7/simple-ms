@@ -1,11 +1,26 @@
+kafka:
+  topics:
+    transaction-listener: transaction-listener
+
+#
+
 server:
   port: 8081
   error:
     include-message: always
 
 spring:
+  sql:
+    init:
+      mode: always
+      continue-on-error: true
+  jpa:
+    database-platform: org.hibernate.dialect.PostgreSQLDialect
+    hibernate:
+      ddl-auto: update
+    defer-datasource-initialization: true
   datasource:
-    url: jdbc:postgresql://localhost:5424/cyber-shop
+    url: jdbc:postgresql://localhost:5424/account-service
     username: root
     password: root
     driverClassName: org.postgresql.Driver

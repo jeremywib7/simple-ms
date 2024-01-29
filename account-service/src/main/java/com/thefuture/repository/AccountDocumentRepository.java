@@ -5,7 +5,7 @@ import org.springframework.data.elasticsearch.repository.ElasticsearchRepository
 import org.springframework.stereotype.Repository;
 
 @Repository
-public interface AccountRepository extends ElasticsearchRepository<AccountDocument, String> {
+public interface AccountDocumentRepository extends ElasticsearchRepository<AccountDocument, String> {
     AccountDocument findByPublicId(String accountHolder);
 }
 

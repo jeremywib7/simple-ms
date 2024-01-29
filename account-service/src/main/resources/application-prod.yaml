@@ -1,3 +1,9 @@
+kafka:
+  topics:
+    transaction-listener: transaction-listener
+
+#
+
 server:
   port: 8081
   error:
@@ -5,7 +11,7 @@ server:
 
 spring:
   datasource:
-    url: jdbc:postgresql://localhost:5424/account
+    url: jdbc:postgresql://localhost:5424/account-service
     username: root
     password: root
     driverClassName: org.postgresql.Driver
@@ -13,6 +19,16 @@ spring:
     uris: http://localhost:9200
   application:
     name: account-service
+#  kafka:
+#    topic: balance-update-topic
+#    bootstrap-servers: localhost:9092
+#    template:
+#      default-topic: balance-update-topic
+#    producer:
+#      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+#      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+#    consumer:
+#      group-id: balance-update-topic
 
 eureka:
   client:

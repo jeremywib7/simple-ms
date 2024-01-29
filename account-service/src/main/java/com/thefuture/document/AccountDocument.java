@@ -15,7 +15,7 @@ import java.math.BigDecimal;
 @AllArgsConstructor
 @NoArgsConstructor
 public class AccountDocument extends BaseDocument {
-    private String accountNumber = AccountServiceImpl.generateRandomAccountNumber();
+    private String accountNumber;
     private String accountHolder;
     private BigDecimal balance;
 }

@@ -4,17 +4,11 @@ import lombok.*;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+@Data
 @AllArgsConstructor
-@NoArgsConstructor
 public class TransactionEvent {
-    private String publicId;
-    private BigDecimal newBalance;
-
-
-//    public BalanceUpdateEvent(String publicId, BigDecimal newBalance) {
-//        super(orderNumber);
-//        this.orderNumber = orderNumber;
-//    }
+    private String senderPublicId;
+    private BigDecimal senderNewBalance;
+    private String receiverPublicId;
+    private BigDecimal receiverNewBalance;
 }

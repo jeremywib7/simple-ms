@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,7 +24,7 @@ public class AccountController {
     @Operation(summary = "Create a bank account")
     @PostMapping("v1")
     public ResponseEntity<AccountResponse> createAccount(@Valid @RequestBody AccountRequest account) {
-        return ResponseEntity.ok(accountService.createAccount(account));
+        return new ResponseEntity<>(accountService.createAccount(account), HttpStatus.CREATED);
     }
 
     @Operation(summary = "Get a bank account by its id")

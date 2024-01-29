@@ -1,3 +1,8 @@
+kafka:
+  topics:
+    transaction-listener: transaction-listener
+#
+
 server:
   port: 8085
   error:
@@ -11,4 +16,10 @@ eureka:
   client:
     service-url:
       defaultZone: http://eureka:password@localhost:8761/eureka
+
+logging:
+  pattern:
+    dateformat: yyyy-MM-dd HH:mm:ss.SSS
+    level: '%5p [${spring.application.name:},%X{traceId:-},%X{spanId:-}]'
+
 

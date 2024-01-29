@@ -1,6 +1,7 @@
 package com.thefuture.service.impl;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.thefuture.config.properties.KafkaProperties;
 import com.thefuture.exception.InsufficientBalanceException;
 import com.thefuture.document.TransactionDocument;
 import com.thefuture.dto.AccountResponse;
@@ -15,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 
@@ -24,29 +26,57 @@ import java.math.BigDecimal;
 public class TransactionServiceImpl implements TransactionService {
 
     private final KafkaMessagePublisher kafkaMessagePublisher;
+    private final KafkaProperties kafkaProperties;
     private final AccountServiceFeign accountService;
     private final TransactionRepository transactionRepository;
     private final ModelMapper modelMapper;
 
-    public TransactionResponse createTransaction(TransactionRequest transactionRequest) throws JsonProcessingException {
+    @Transactional
+    public TransactionResponse createTransaction(TransactionRequest transactionRequest) {
         AccountResponse senderAccount = accountService.getAccountById(transactionRequest.getSenderPublicId());
         AccountResponse receiverAccount = accountService.getAccountById(transactionRequest.getReceiverPublicId());
 
-        if (!isBalanceEnough(senderAccount.getBalance(), transactionRequest.getNominal())) {
-            throw new InsufficientBalanceException("Insufficient balance for the transaction");
-        }
+        checkBalance(senderAccount.getBalance(), transactionRequest.getNominal());
 
         BigDecimal senderNewBalance = senderAccount.getBalance().subtract(transactionRequest.getNominal());
-        kafkaMessagePublisher.sendEventsToTopic(new TransactionEvent(senderAccount.getPublicId(), senderNewBalance));
-
         BigDecimal receiverNewBalance = receiverAccount.getBalance().add(transactionRequest.getNominal());
-        kafkaMessagePublisher.sendEventsToTopic(new TransactionEvent(receiverAccount.getPublicId(), receiverNewBalance));
 
+        sendTransactionEvent(senderAccount.getPublicId(), senderNewBalance, receiverAccount.getPublicId(), receiverNewBalance);
+        saveTransaction(transactionRequest);
+
+        return mapTransactionResponse(transactionRequest);
+    }
+
+    private void checkBalance(BigDecimal balance, BigDecimal nominal) {
+        if (!isBalanceEnough(balance, nominal)) {
+            throw new InsufficientBalanceException("Insufficient balance for the transaction");
+        }
+    }
+
+    private void sendTransactionEvent(
+            String senderPublicId,
+            BigDecimal senderNewBalance,
+            String receiverPublicId,
+            BigDecimal receiverNewBalance) {
+        kafkaMessagePublisher.sendEventsToTopic(
+                kafkaProperties.getTopics().getTransactionListener(),
+                new TransactionEvent(
+                        senderPublicId,
+                        senderNewBalance,
+                        receiverPublicId,
+                        receiverNewBalance)
+        );
+    }
+
+    private void saveTransaction(TransactionRequest transactionRequest) {
         TransactionDocument transactionDocument = modelMapper.map(transactionRequest, TransactionDocument.class);
         transactionRepository.save(transactionDocument);
+    }
 
+    private TransactionResponse mapTransactionResponse(TransactionRequest transactionRequest) {
         return modelMapper.map(transactionRequest, TransactionResponse.class);
     }
+
 
     public boolean isBalanceEnough(BigDecimal accountBalance, BigDecimal nominal) {
         if (accountBalance.compareTo(nominal) > 0) {

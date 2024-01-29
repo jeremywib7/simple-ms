@@ -1,7 +1,8 @@
 package com.thefuture.service;
 
 import com.thefuture.event.TransactionEvent;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.kafka.support.SendResult;
 import org.springframework.stereotype.Service;
@@ -9,41 +10,38 @@ import org.springframework.stereotype.Service;
 import java.util.concurrent.CompletableFuture;
 
 @Service
+@Slf4j
+@RequiredArgsConstructor
 public class KafkaMessagePublisher {
 
-    @Autowired
-    private KafkaTemplate<String,Object> template;
+    private final KafkaTemplate<String, Object> template;
 
-    public void sendMessageToTopic(String message){
+    public void sendMessageToTopic(String message) {
         CompletableFuture<SendResult<String, Object>> future = template.send("javatechie-demo2", message);
-        future.whenComplete((result,ex)->{
+        future.whenComplete((result, ex) -> {
             if (ex == null) {
-                System.out.println("Sent message=[" + message +
-                        "] with offset=[" + result.getRecordMetadata().offset() + "]");
+                log.info("Sent message={} with offset=[{}]", message, result.getRecordMetadata().offset());
             } else {
-                System.out.println("Unable to send message=[" +
-                        message + "] due to : " + ex.getMessage());
+                log.error("Unable to send message={} due to: {}", message, ex.getMessage());
             }
         });
 
     }
 
-    public void sendEventsToTopic(TransactionEvent transactionEvent) {
+    public void sendEventsToTopic(String topic, TransactionEvent transactionEvent) {
         try {
-            CompletableFuture<SendResult<String, Object>> future = template.send("update-balance",
+            CompletableFuture<SendResult<String, Object>> future = template.send(topic,
                     transactionEvent);
             future.whenComplete((result, ex) -> {
                 if (ex == null) {
-                    System.out.println("Sent message=[" + transactionEvent.toString() +
-                            "] with offset=[" + result.getRecordMetadata().offset() + "]");
+                    log.info("Sent message={} with offset=[{}]", transactionEvent, result.getRecordMetadata().offset());
                 } else {
-                    System.out.println("Unable to send message=[" +
-                            transactionEvent.toString() + "] due to : " + ex.getMessage());
+                    log.error("Unable to send message={} due to: {}", transactionEvent, ex.getMessage());
                 }
             });
 
         } catch (Exception ex) {
-            System.out.println("ERROR : "+ ex.getMessage());
+            log.error("ERROR={}", ex.getMessage());
         }
     }
 }
